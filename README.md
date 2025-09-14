@@ -21,7 +21,6 @@
 - [sslcaudit](https://github.com/abbbe/sslcaudit) - No description provided[![->](https://img.shields.io/github/stars/abbbe/sslcaudit.svg?style=social&label=Star&maxAge=2592000)](https://github.com/abbbe/sslcaudit/stargazers/)
 - [Sublist3r](https://github.com/aboul3la/Sublist3r) - Fast subdomains enumeration tool for penetration testers.[![->](https://img.shields.io/github/stars/aboul3la/Sublist3r.svg?style=social&label=Star&maxAge=2592000)](https://github.com/aboul3la/Sublist3r/stargazers/)
 - [doork](https://github.com/AeonDave/doork) - Passive Vulnerability Auditor.[![->](https://img.shields.io/github/stars/AeonDave/doork.svg?style=social&label=Star&maxAge=2592000)](https://github.com/AeonDave/doork/stargazers/)
-- [sir](https://github.com/AeonDave/sir) - Skype Ip Resolver.[![->](https://img.shields.io/github/stars/AeonDave/sir.svg?style=social&label=Star&maxAge=2592000)](https://github.com/AeonDave/sir/stargazers/)
 - [xl-py](https://github.com/anggialberto/xl-py) - No description provided[![->](https://img.shields.io/github/stars/anggialberto/xl-py.svg?style=social&label=Star&maxAge=2592000)](https://github.com/anggialberto/xl-py/stargazers/)
 - [netdiscover](https://github.com/alexxy/netdiscover) - netdiscover.[![->](https://img.shields.io/github/stars/alexxy/netdiscover.svg?style=social&label=Star&maxAge=2592000)](https://github.com/alexxy/netdiscover/stargazers/)
 - [ATSCAN](https://github.com/AlisamTechnology/ATSCAN) - Advanced dork Search & Mass Exploit Scanner.[![->](https://img.shields.io/github/stars/AlisamTechnology/ATSCAN.svg?style=social&label=Star&maxAge=2592000)](https://github.com/AlisamTechnology/ATSCAN/stargazers/)
@@ -182,7 +181,6 @@
 - [xspy](https://github.com/mnp/xspy) - Record X11 keypress events to a log file.[![->](https://img.shields.io/github/stars/mnp/xspy.svg?style=social&label=Star&maxAge=2592000)](https://github.com/mnp/xspy/stargazers/)
 - [Th3inspector](https://github.com/Moham3dRiahi/Th3inspector) - Th3Inspector 🕵️ Best Tool For Information Gathering 🔎.[![->](https://img.shields.io/github/stars/Moham3dRiahi/Th3inspector.svg?style=social&label=Star&maxAge=2592000)](https://github.com/Moham3dRiahi/Th3inspector/stargazers/)
 - [XAttacker](https://github.com/Moham3dRiahi/XAttacker) - X Attacker Tool ☣ Website Vulnerability Scanner & Auto Exploiter.[![->](https://img.shields.io/github/stars/Moham3dRiahi/XAttacker.svg?style=social&label=Star&maxAge=2592000)](https://github.com/Moham3dRiahi/XAttacker/stargazers/)
-- [apt2](https://github.com/MooseDojo/apt2) - automated penetration toolkit.[![->](https://img.shields.io/github/stars/MooseDojo/apt2.svg?style=social&label=Star&maxAge=2592000)](https://github.com/MooseDojo/apt2/stargazers/)
 - [sslstrip](https://github.com/moxie0/sslstrip) - A tool for exploiting Moxie Marlinspike's SSL "stripping" attack..[![->](https://img.shields.io/github/stars/moxie0/sslstrip.svg?style=social&label=Star&maxAge=2592000)](https://github.com/moxie0/sslstrip/stargazers/)
 - [creddump](https://github.com/moyix/creddump) - Automatically exported from code.google.com/p/creddump.[![->](https://img.shields.io/github/stars/moyix/creddump.svg?style=social&label=Star&maxAge=2592000)](https://github.com/moyix/creddump/stargazers/)
 - [DKMC](https://github.com/Mr-Un1k0d3r/DKMC) - DKMC - Dont kill my cat - Malicious payload evasion tool.[![->](https://img.shields.io/github/stars/Mr-Un1k0d3r/DKMC.svg?style=social&label=Star&maxAge=2592000)](https://github.com/Mr-Un1k0d3r/DKMC/stargazers/)
@@ -335,4 +333,4 @@
 - [Repository](https://github.com/may215/awesome-termux-hacking)
 
 ## Maintained by 
-- [Ayanokoji Kiyotaka](https://github.com/Itz-Ayanokoji)
+- [Yatin](https://github.com/DamnYatin)
