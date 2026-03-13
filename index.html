@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PentestDB — Hacking & Security Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c0f;
+    --surface: #0f1318;
+    --border: #1e2530;
+    --border-bright: #2e3d52;
+    --text: #c8d8e8;
+    --text-dim: #5a7080;
+    --text-muted: #3a4f60;
+    --accent: #00e5ff;
+    --accent2: #ff4f6e;
+    --accent3: #a8ff78;
+    --accent4: #ffd166;
+    --accent5: #b388ff;
+    --cat-osint: #00e5ff;
+    --cat-web: #ff4f6e;
+    --cat-net: #a8ff78;
+    --cat-wifi: #ffd166;
+    --cat-pass: #b388ff;
+    --cat-post: #ff8c42;
+    --cat-social: #ff6b9d;
+    --cat-forensics: #64ffda;
+    --cat-mobile: #82b1ff;
+    --cat-evasion: #ea80fc;
+    --cat-misc: #ccff90;
+    --mono: 'IBM Plex Mono', monospace;
+    --display: 'Syne', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Scanlines overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  /* Noise texture */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* HEADER */
+  header {
+    position: relative;
+    padding: 60px 40px 40px;
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    left: -100px;
+    width: 600px;
+    height: 400px;
+    background: radial-gradient(ellipse, rgba(0,229,255,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .header-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    opacity: 0.8;
+  }
+
+  h1 {
+    font-family: var(--display);
+    font-size: clamp(36px, 6vw, 72px);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+
+  h1 span {
+    color: var(--accent);
+    position: relative;
+  }
+
+  .header-sub {
+    font-family: var(--mono);
+    color: var(--text-dim);
+    font-size: 13px;
+    max-width: 600px;
+    margin-bottom: 32px;
+  }
+
+  .header-stats {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .stat-num {
+    font-family: var(--display);
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+
+  .warning-bar {
+    margin: 24px 0 0;
+    padding: 10px 16px;
+    border-left: 3px solid var(--accent2);
+    background: rgba(255,79,110,0.05);
+    color: var(--accent2);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* CONTROLS */
+  .controls {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,12,15,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 40px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .search-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+    max-width: 360px;
+  }
+
+  .search-wrapper::before {
+    content: '▶';
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--accent);
+    font-size: 10px;
+    pointer-events: none;
+  }
+
+  input[type="search"] {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 8px 12px 8px 30px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="search"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px rgba(0,229,255,0.2);
+  }
+
+  input[type="search"]::placeholder { color: var(--text-muted); }
+
+  .filter-scroll {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter-btn {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 5px 10px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    text-transform: uppercase;
+  }
+
+  .filter-btn:hover { border-color: var(--border-bright); color: var(--text); }
+  .filter-btn.active { background: rgba(0,229,255,0.1); border-color: var(--accent); color: var(--accent); }
+
+  .count-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-left: auto;
+    padding: 4px 0;
+    white-space: nowrap;
+  }
+
+  /* MAIN LAYOUT */
+  main {
+    padding: 24px 40px 60px;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  .section {
+    margin-bottom: 48px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-icon { font-size: 16px; }
+
+  .section-title {
+    font-family: var(--display);
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.02em;
+  }
+
+  .section-count {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-left: auto;
+  }
+
+  .section-line {
+    width: 40px;
+    height: 2px;
+    flex-shrink: 0;
+  }
+
+  /* TOOLS GRID */
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .tool-card {
+    background: var(--surface);
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: background 0.15s;
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+  }
+
+  .tool-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 0;
+    transition: height 0.2s;
+  }
+
+  .tool-card:hover { background: #111820; }
+  .tool-card:hover::before { height: 100%; }
+
+  .tool-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .tool-name {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.15s;
+    word-break: break-all;
+  }
+
+  .tool-name:hover { color: var(--accent); }
+
+  .tool-github {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 2px 6px;
+    border: 1px solid var(--border);
+    white-space: nowrap;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+
+  .tool-github:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0,229,255,0.05);
+  }
+
+  .tool-desc {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.55;
+  }
+
+  .tool-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 9px;
+    padding: 2px 6px;
+    border: 1px solid;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    width: fit-content;
+    margin-top: 2px;
+  }
+
+  .badge-active { border-color: rgba(168,255,120,0.4); color: var(--accent3); background: rgba(168,255,120,0.05); }
+  .badge-archived { border-color: rgba(255,79,110,0.3); color: var(--accent2); background: rgba(255,79,110,0.05); }
+
+  /* Category color variables applied dynamically */
+
+  .no-results {
+    grid-column: 1/-1;
+    padding: 48px;
+    text-align: center;
+    color: var(--text-muted);
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: gap;
+    color: var(--text-muted);
+    font-size: 11px;
+    gap: 12px;
+  }
+
+  footer span { color: var(--text-dim); }
+
+  /* Responsive */
+  @media(max-width: 768px) {
+    header, .controls, main, footer { padding-left: 20px; padding-right: 20px; }
+    .tools-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section {
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .section:nth-child(2) { animation-delay: 0.05s; }
+  .section:nth-child(3) { animation-delay: 0.1s; }
+  .section:nth-child(4) { animation-delay: 0.15s; }
+  .section:nth-child(5) { animation-delay: 0.2s; }
+
+  /* Hidden class for filtering */
+  .tool-card.hidden { display: none; }
+  .section.hidden { display: none; }
+
+  /* Highlight matching text */
+  mark {
+    background: rgba(0,229,255,0.2);
+    color: var(--accent);
+    border-radius: 1px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-tag">// security research toolkit index</div>
+  <h1>Pentest<span>DB</span></h1>
+  <p class="header-sub">Curated open-source hacking, penetration testing, OSINT, and security research tools. Updated February 2026.</p>
+  <div class="header-stats">
+    <div class="stat"><span class="stat-num" id="total-count">400+</span><span class="stat-label">Tools Listed</span></div>
+    <div class="stat"><span class="stat-num">11</span><span class="stat-label">Categories</span></div>
+    <div class="stat"><span class="stat-num">2026</span><span class="stat-label">Last Updated</span></div>
+  </div>
+  <div class="warning-bar">⚠ For educational and authorized security research purposes only. Always obtain explicit written permission before testing any system you do not own.</div>
+</header>
+
+<div class="controls">
+  <div class="search-wrapper">
+    <input type="search" id="search" placeholder="search tools..." autocomplete="off">
+  </div>
+  <div class="filter-scroll">
+    <button class="filter-btn active" data-cat="all">All</button>
+    <button class="filter-btn" data-cat="osint">OSINT</button>
+    <button class="filter-btn" data-cat="web">Web</button>
+    <button class="filter-btn" data-cat="network">Network</button>
+    <button class="filter-btn" data-cat="wireless">Wireless</button>
+    <button class="filter-btn" data-cat="password">Passwords</button>
+    <button class="filter-btn" data-cat="post">Post-Exploit</button>
+    <button class="filter-btn" data-cat="social">Social Eng.</button>
+    <button class="filter-btn" data-cat="forensics">Forensics</button>
+    <button class="filter-btn" data-cat="mobile">Mobile</button>
+    <button class="filter-btn" data-cat="evasion">Evasion</button>
+    <button class="filter-btn" data-cat="misc">Misc</button>
+  </div>
+  <div class="count-badge" id="showing-count"></div>
+</div>
+
+<main id="main-content">
+
+  <!-- OSINT -->
+  <section class="section" data-cat="osint">
+    <div class="section-header">
+      <div class="section-line" style="background: var(--cat-osint)"></div>
+      <span class="section-icon">🔍</span>
+      <h2 class="section-title">Information Gathering & OSINT</h2>
+      <span class="section-count" id="count-osint"></span>
+    </div>
+    <div class="tools-grid" id="grid-osint">
+      <div class="tool-card" data-search="amass owasp attack surface mapping asset discovery" style="--cat-color: var(--cat-osint)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/owasp-amass/amass" target="_blank">amass</a><a class="tool-github" href="https://github.com/owasp-amass/amass" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">In-depth attack surface mapping and asset discovery tool by OWASP.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-osint)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/AlisamTechnology/ATSCAN" target="_blank">ATSCAN</a><a class="tool-github" href="https://github.com/AlisamTechnology/ATSCAN" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Advanced dork search & mass exploit scanner.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-osint)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/blacklanternsecurity/bbot" target="_blank">bbot</a><a class="tool-github" href="https://github.com/blacklanternsecurity/bbot" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Recursive internet scanner for hackers — faster and more reliable than Spiderfoot.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-osint)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/initstring/cloud_enum" target="_blank">CloudEnum</a><a class="tool-github" href="https://github.com/initstring/cloud_enum" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Multi-cloud OSINT tool to enumerate public resources in AWS, Azure, and Google Cloud.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-osint)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/Tuhinshubhra/CMSeeK" target="_blank">CMSeeK</a><a class="tool-github" href="https://github.com/Tuhinshubhra/CMSeeK" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">CMS detection and exploitation — scans WordPress, Joomla, Drupal and 170+ other CMSs.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-osint)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/darkoperator/dnsrecon" target="_blank">dnsrecon</a><a class="tool-github" href="https://github.com/darkoperator/dnsrecon" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">DNS enumeration script for comprehensive DNS information gathering.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-osint)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/FortyNorthSecurity/EyeWitness" target="_blank">EyeWitness</a><a class="tool-github" href="https://github.com/FortyNorthSecurity/EyeWitness" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Takes screenshots of websites, provides server header info, and identifies default credentials.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-osint)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/Edu4rdSHL/findomain" target="_blank">findomain</a><a class="tool-github" href="https://github.com/Edu4rdSHL/findomain" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">The fastest and cross-platform subdomain enumerator.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-osint)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/gitleaks/gitleaks" target="_blank">gitleaks</a><a class="tool-github" href="https://github.com/gitleaks/gitleaks" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Detect secrets (API keys, passwords, tokens) in git repos, files, and stdin.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-osint)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/khast3x/h8mail" target="_blank">h8mail</a><a class="tool-github" href="https://github.com/khast3x/h8mail" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Email OSINT and password breach hunting. Searches breach databases and reconnaissance services.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-osint)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/megadose/holehe" target="_blank">holehe</a><a class="tool-github" href="https://github.com/megadose/holehe" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Check if an email is attached to accounts on 120+ sites including Twitter, Instagram, Imgur.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-osint)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/projectdiscovery/httpx" target="_blank">httpx</a><a class="tool-github" href="https://github.com/projectdiscovery/httpx" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Fast and multi-purpose HTTP toolkit for running multiple probes. By ProjectDiscovery.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-osint)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/projectdiscovery/katana" target="_blank">katana</a><a class="tool-github" href="https://github.com/projectdiscovery/katana" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Next-generation crawling and spidering framework by ProjectDiscovery.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-osint)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/soxoj/maigret" target="_blank">maigret</a><a class="tool-github" href="https://github.com/soxoj/maigret" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Collect a dossier on a person by username from thousands of sites. Advanced Sherlock fork.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-osint)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/smicallef/spiderfoot" target="_blank">SpiderFoot</a><a class="tool-github" href="https://github.com/smicallef/spiderfoot" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Open source OSINT automation integrating with almost every data source available.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-osint)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/projectdiscovery/subfinder" target="_blank">subfinder</a><a class="tool-github" href="https://github.com/projectdiscovery/subfinder" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Fast passive subdomain enumeration tool by ProjectDiscovery.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-osint)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/aboul3la/Sublist3r" target="_blank">Sublist3r</a><a class="tool-github" href="https://github.com/aboul3la/Sublist3r" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Fast subdomain enumeration tool for penetration testers.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-osint)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/laramies/theHarvester" target="_blank">theHarvester</a><a class="tool-github" href="https://github.com/laramies/theHarvester" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">E-mails, subdomains and names harvester for OSINT reconnaissance.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-osint)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/sherlock-project/sherlock" target="_blank">sherlock</a><a class="tool-github" href="https://github.com/sherlock-project/sherlock" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Hunt down social media accounts by username across social networks.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-osint)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/trufflesecurity/trufflehog" target="_blank">trufflehog</a><a class="tool-github" href="https://github.com/trufflesecurity/trufflehog" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Find and verify leaked credentials in git history, S3, filesystem, and more.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-osint)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/six2dez/reconFTW" target="_blank">reconFTW</a><a class="tool-github" href="https://github.com/six2dez/reconFTW" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Automated recon on a target domain running best-in-class tools.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-osint)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/danielmiessler/SecLists" target="_blank">SecLists</a><a class="tool-github" href="https://github.com/danielmiessler/SecLists" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Security tester's companion — usernames, passwords, URLs, fuzzing payloads, web shells, and more.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-osint)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/urbanadventurer/WhatWeb" target="_blank">WhatWeb</a><a class="tool-github" href="https://github.com/urbanadventurer/WhatWeb" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Next generation web scanner — identifies technologies used by websites.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WEB APP TESTING -->
+  <section class="section" data-cat="web">
+    <div class="section-header">
+      <div class="section-line" style="background: var(--cat-web)"></div>
+      <span class="section-icon">🕸️</span>
+      <h2 class="section-title">Web Application Testing</h2>
+      <span class="section-count" id="count-web"></span>
+    </div>
+    <div class="tools-grid" id="grid-web">
+      <div class="tool-card" style="--cat-color: var(--cat-web)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/commixproject/commix" target="_blank">commix</a><a class="tool-github" href="https://github.com/commixproject/commix" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Automated all-in-one OS command injection and exploitation tool.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-web)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/hahwul/dalfox" target="_blank">dalfox</a><a class="tool-github" href="https://github.com/hahwul/dalfox" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Powerful open-source XSS scanner and utility focused on automation.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-web)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/stamparm/DSSS" target="_blank">DSSS</a><a class="tool-github" href="https://github.com/stamparm/DSSS" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Damn Small SQLi Scanner — minimal but effective SQL injection detection.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-web)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/ffuf/ffuf" target="_blank">ffuf</a><a class="tool-github" href="https://github.com/ffuf/ffuf" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Fast web fuzzer written in Go — industry-standard for directory/parameter fuzzing.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-web)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/OJ/gobuster" target="_blank">gobuster</a><a class="tool-github" href="https://github.com/OJ/gobuster" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Tool for brute-forcing URIs, DNS subdomains, virtual host names, Amazon S3 buckets, and more.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-web)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/sqlmapproject/sqlmap" target="_blank">sqlmap</a><a class="tool-github" href="https://github.com/sqlmapproject/sqlmap" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Automatic SQL injection and database takeover tool. The gold standard for SQLi.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-web)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/EnableSecurity/wafw00f" target="_blank">wafw00f</a><a class="tool-github" href="https://github.com/EnableSecurity/wafw00f" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Identify and fingerprint Web Application Firewall (WAF) products protecting a website.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-web)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/wpscanteam/wpscan" target="_blank">wpscan</a><a class="tool-github" href="https://github.com/wpscanteam/wpscan" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Black box WordPress vulnerability scanner written for security professionals.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-web)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/xmendez/wfuzz" target="_blank">wfuzz</a><a class="tool-github" href="https://github.com/xmendez/wfuzz" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Web application fuzzer designed for brute-forcing web applications.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-web)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/s0md3v/XSStrike" target="_blank">XSStrike</a><a class="tool-github" href="https://github.com/s0md3v/XSStrike" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Most advanced XSS scanner with fuzzing and payload generation capabilities.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-web)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/zaproxy/zaproxy" target="_blank">zaproxy (ZAP)</a><a class="tool-github" href="https://github.com/zaproxy/zaproxy" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">The OWASP ZAP core project — leading open-source web security scanner.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-web)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/swisskyrepo/SSRFmap" target="_blank">SSRFmap</a><a class="tool-github" href="https://github.com/swisskyrepo/SSRFmap" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Automatic SSRF fuzzer and exploitation tool.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-web)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/nabla-c0d3/sslyze" target="_blank">sslyze</a><a class="tool-github" href="https://github.com/nabla-c0d3/sslyze" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Fast and powerful SSL/TLS scanning library.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-web)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/andresriancho/w3af" target="_blank">w3af</a><a class="tool-github" href="https://github.com/andresriancho/w3af" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Web application attack and audit framework — open-source web vulnerability scanner.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-web)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/wireghoul/dotdotpwn" target="_blank">dotdotpwn</a><a class="tool-github" href="https://github.com/wireghoul/dotdotpwn" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">DotDotPwn — the directory traversal fuzzer.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-web)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/digininja/CeWL" target="_blank">CeWL</a><a class="tool-github" href="https://github.com/digininja/CeWL" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Custom word list generator that spiders a target website.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- NETWORK -->
+  <section class="section" data-cat="network">
+    <div class="section-header">
+      <div class="section-line" style="background: var(--cat-net)"></div>
+      <span class="section-icon">🌐</span>
+      <h2 class="section-title">Network Scanning & Enumeration</h2>
+      <span class="section-count" id="count-network"></span>
+    </div>
+    <div class="tools-grid" id="grid-network">
+      <div class="tool-card" style="--cat-color: var(--cat-net)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/bettercap/bettercap" target="_blank">bettercap</a><a class="tool-github" href="https://github.com/bettercap/bettercap" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Swiss Army knife for 802.11, BLE, and Ethernet networks reconnaissance and MITM attacks.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-net)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/jpillora/chisel" target="_blank">chisel</a><a class="tool-github" href="https://github.com/jpillora/chisel" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Fast TCP/UDP tunnel over HTTP — popular for network pivoting in pentests.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-net)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/cddmp/enum4linux-ng" target="_blank">enum4linux-ng</a><a class="tool-github" href="https://github.com/cddmp/enum4linux-ng" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Next-generation enum4linux with additional features for Windows/Samba enumeration.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-net)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/Hackplayers/evil-winrm" target="_blank">evil-winrm</a><a class="tool-github" href="https://github.com/Hackplayers/evil-winrm" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">The ultimate WinRM shell for hacking and pentesting Windows environments.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-net)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/fortra/impacket" target="_blank">impacket</a><a class="tool-github" href="https://github.com/fortra/impacket" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Python classes for working with network protocols — essential for Windows/AD pentesting.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-net)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/ropnop/kerbrute" target="_blank">kerbrute</a><a class="tool-github" href="https://github.com/ropnop/kerbrute" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Fast Kerberos bruteforce and enumeration tool for Active Directory environments.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-net)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/nicocha30/ligolo-ng" target="_blank">ligolo-ng</a><a class="tool-github" href="https://github.com/nicocha30/ligolo-ng" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Advanced, fast tunneling/pivoting tool using TUN interfaces.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-net)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/robertdavidgraham/masscan" target="_blank">masscan</a><a class="tool-github" href="https://github.com/robertdavidgraham/masscan" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">TCP port scanner that spews SYN packets asynchronously — scans entire internet in under 5 minutes.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-net)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/Pennyw0rth/NetExec" target="_blank">netexec</a><a class="tool-github" href="https://github.com/Pennyw0rth/NetExec" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Network execution tool (successor to CrackMapExec) for credential spraying on services.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-net)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/lgandx/Responder" target="_blank">Responder</a><a class="tool-github" href="https://github.com/lgandx/Responder" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">LLMNR, NBT-NS and MDNS poisoner with built-in rogue authentication servers (HTTP/SMB/MSSQL/FTP/LDAP).</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-net)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/threat9/routersploit" target="_blank">routersploit</a><a class="tool-github" href="https://github.com/threat9/routersploit" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Exploitation framework for embedded devices and routers.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-net)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/RustScan/RustScan" target="_blank">rustscan</a><a class="tool-github" href="https://github.com/RustScan/RustScan" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">The modern port scanner — find ports in seconds, then pass them to Nmap for deeper analysis.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-net)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/ShawnDEvans/smbmap" target="_blank">smbmap</a><a class="tool-github" href="https://github.com/ShawnDEvans/smbmap" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Handy SMB enumeration tool for Windows file share assessment.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-net)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/samratashok/nishang" target="_blank">nishang</a><a class="tool-github" href="https://github.com/samratashok/nishang" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Offensive PowerShell for red team, penetration testing, and offensive security.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WIRELESS -->
+  <section class="section" data-cat="wireless">
+    <div class="section-header">
+      <div class="section-line" style="background: var(--cat-wifi)"></div>
+      <span class="section-icon">📡</span>
+      <h2 class="section-title">Wireless / Wi-Fi</h2>
+      <span class="section-count" id="count-wireless"></span>
+    </div>
+    <div class="tools-grid" id="grid-wireless">
+      <div class="tool-card" style="--cat-color: var(--cat-wifi)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/v1s1t0r1sh3r3/airgeddon" target="_blank">airgeddon</a><a class="tool-github" href="https://github.com/v1s1t0r1sh3r3/airgeddon" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Multi-use bash script for Linux to audit wireless networks comprehensively.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-wifi)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/s0lst1c3/eaphammer" target="_blank">eaphammer</a><a class="tool-github" href="https://github.com/s0lst1c3/eaphammer" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Targeted evil twin attacks against WPA2-Enterprise networks.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-wifi)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/savio-code/fern-wifi-cracker" target="_blank">fern-wifi-cracker</a><a class="tool-github" href="https://github.com/savio-code/fern-wifi-cracker" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Wireless security auditing and attack software with GUI.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-wifi)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/FluxionNetwork/fluxion" target="_blank">fluxion</a><a class="tool-github" href="https://github.com/FluxionNetwork/fluxion" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Security auditing and social engineering research tool for evil twin attacks.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-wifi)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/ZerBea/hcxdumptool" target="_blank">hcxdumptool</a><a class="tool-github" href="https://github.com/ZerBea/hcxdumptool" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Small tool to capture packets from WLAN devices.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-wifi)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/ZerBea/hcxtools" target="_blank">hcxtools</a><a class="tool-github" href="https://github.com/ZerBea/hcxtools" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Convert capture files to hash files for Hashcat or John the Ripper. WiFi security research.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-wifi)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/riverloopsec/killerbee" target="_blank">killerbee</a><a class="tool-github" href="https://github.com/riverloopsec/killerbee" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">IEEE 802.15.4/ZigBee security research toolkit.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-wifi)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/wiire-a/pixiewps" target="_blank">pixiewps</a><a class="tool-github" href="https://github.com/wiire-a/pixiewps" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Offline Wi-Fi Protected Setup brute-force utility.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-wifi)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/joswr1ght/cowpatty" target="_blank">cowpatty</a><a class="tool-github" href="https://github.com/joswr1ght/cowpatty" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">WPA2-PSK offline password cracking tool.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-wifi)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/mikeryan/crackle" target="_blank">crackle</a><a class="tool-github" href="https://github.com/mikeryan/crackle" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Crack and decrypt BLE encryption vulnerabilities.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PASSWORD -->
+  <section class="section" data-cat="password">
+    <div class="section-header">
+      <div class="section-line" style="background: var(--cat-pass)"></div>
+      <span class="section-icon">🔐</span>
+      <h2 class="section-title">Password Attacks & Credential Cracking</h2>
+      <span class="section-count" id="count-password"></span>
+    </div>
+    <div class="tools-grid" id="grid-password">
+      <div class="tool-card" style="--cat-color: var(--cat-pass)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/berzerk0/BEWGor" target="_blank">BEWGor</a><a class="tool-github" href="https://github.com/berzerk0/BEWGor" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Bull's Eye Wordlist Generator — advanced wordlist creation tool.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-pass)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/vanhauser-thc/thc-hydra" target="_blank">thc-hydra</a><a class="tool-github" href="https://github.com/vanhauser-thc/thc-hydra" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Fast and flexible online password cracking tool supporting 50+ protocols.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-pass)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/openwall/john" target="_blank">john (JtR)</a><a class="tool-github" href="https://github.com/openwall/john" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">John the Ripper — industry-standard offline password hash cracker.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-pass)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/hashcat/hashcat" target="_blank">hashcat</a><a class="tool-github" href="https://github.com/hashcat/hashcat" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">World's fastest GPU-based password recovery utility.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-pass)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/Mebus/cupp" target="_blank">cupp</a><a class="tool-github" href="https://github.com/Mebus/cupp" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Common User Passwords Profiler — generate targeted wordlists from target information.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-pass)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/digininja/CeWL" target="_blank">CeWL</a><a class="tool-github" href="https://github.com/digininja/CeWL" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Custom wordlist generator that spiders a target website.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-pass)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/galkan/crowbar" target="_blank">crowbar</a><a class="tool-github" href="https://github.com/galkan/crowbar" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Brute-forcing tool that leverages unique attack methods to bypass rate limits.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-pass)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/Tib3rius/patator" target="_blank">patator</a><a class="tool-github" href="https://github.com/Tib3rius/patator" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Multi-purpose brute-forcing tool with modular design for flexibility.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- POST-EXPLOITATION -->
+  <section class="section" data-cat="post">
+    <div class="section-header">
+      <div class="section-line" style="background: var(--cat-post)"></div>
+      <span class="section-icon">💻</span>
+      <h2 class="section-title">Post-Exploitation & C2 Frameworks</h2>
+      <span class="section-count" id="count-post"></span>
+    </div>
+    <div class="tools-grid" id="grid-post">
+      <div class="tool-card" style="--cat-color: var(--cat-post)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/rapid7/metasploit-framework" target="_blank">Metasploit</a><a class="tool-github" href="https://github.com/rapid7/metasploit-framework" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">The world's most-used penetration testing framework. Exploit development, delivery, and post-exploitation.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-post)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/BishopFox/sliver" target="_blank">sliver</a><a class="tool-github" href="https://github.com/BishopFox/sliver" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Open source cross-platform adversary emulation/red team framework.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-post)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/EmpireProject/Empire" target="_blank">Empire</a><a class="tool-github" href="https://github.com/EmpireProject/Empire" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Post-exploitation framework with PowerShell and Python agents.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-post)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/PowerShellMafia/PowerSploit" target="_blank">PowerSploit</a><a class="tool-github" href="https://github.com/PowerShellMafia/PowerSploit" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">PowerShell post-exploitation framework with extensive offensive module library.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-post)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/cyberark/shimit" target="_blank">shimit</a><a class="tool-github" href="https://github.com/cyberark/shimit" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Tool implementing the Golden SAML attack for cloud environment post-exploitation.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-post)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/1N3/Sn1per" target="_blank">Sn1per</a><a class="tool-github" href="https://github.com/1N3/Sn1per" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Automated pentest framework for offensive security experts — full attack chain automation.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOCIAL ENGINEERING -->
+  <section class="section" data-cat="social">
+    <div class="section-header">
+      <div class="section-line" style="background: var(--cat-social)"></div>
+      <span class="section-icon">🎭</span>
+      <h2 class="section-title">Social Engineering & Phishing</h2>
+      <span class="section-count" id="count-social"></span>
+    </div>
+    <div class="tools-grid" id="grid-social">
+      <div class="tool-card" style="--cat-color: var(--cat-social)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/trustedsec/social-engineer-toolkit" target="_blank">SET</a><a class="tool-github" href="https://github.com/trustedsec/social-engineer-toolkit" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">The Social-Engineer Toolkit — the most widely used penetration testing tool for social engineering.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-social)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/thewhiteh4t/seeker" target="_blank">seeker</a><a class="tool-github" href="https://github.com/thewhiteh4t/seeker" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Accurately locate smartphones using social engineering and fake high-fidelity pages.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-social)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/UndeadSec/SocialFish" target="_blank">SocialFish</a><a class="tool-github" href="https://github.com/UndeadSec/SocialFish" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Educational phishing tool and information collector with various campaign templates.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-social)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/jofpin/trape" target="_blank">trape</a><a class="tool-github" href="https://github.com/jofpin/trape" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">People tracker on the internet — OSINT analysis and research tool using JS hooks.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-social)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/FluxionNetwork/fluxion" target="_blank">fluxion</a><a class="tool-github" href="https://github.com/FluxionNetwork/fluxion" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Security research tool combining social engineering with evil twin attacks.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORENSICS -->
+  <section class="section" data-cat="forensics">
+    <div class="section-header">
+      <div class="section-line" style="background: var(--cat-forensics)"></div>
+      <span class="section-icon">🔬</span>
+      <h2 class="section-title">Forensics & Malware Analysis</h2>
+      <span class="section-count" id="count-forensics"></span>
+    </div>
+    <div class="tools-grid" id="grid-forensics">
+      <div class="tool-card" style="--cat-color: var(--cat-forensics)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/volatilityfoundation/volatility3" target="_blank">volatility3</a><a class="tool-github" href="https://github.com/volatilityfoundation/volatility3" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Advanced memory forensics framework — extract digital artifacts from RAM dumps.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-forensics)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/frida/frida" target="_blank">frida</a><a class="tool-github" href="https://github.com/frida/frida" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Dynamic instrumentation toolkit for developers, reverse-engineers, and security researchers.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-forensics)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/capstone-engine/capstone" target="_blank">capstone</a><a class="tool-github" href="https://github.com/capstone-engine/capstone" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Capstone disassembly framework supporting Arm, Arm64, x86, MIPS, PowerPC, and more.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-forensics)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/mandiant/capa" target="_blank">capa</a><a class="tool-github" href="https://github.com/mandiant/capa" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Detect capabilities in executable files — understand what malware can do.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-forensics)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/iBotPeaches/Apktool" target="_blank">apktool</a><a class="tool-github" href="https://github.com/iBotPeaches/Apktool" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Tool for reverse engineering Android APK files — decompile, modify, rebuild.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-forensics)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/CISOfy/lynis" target="_blank">lynis</a><a class="tool-github" href="https://github.com/CISOfy/lynis" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Security auditing tool for Linux, macOS, and UNIX. Assists with HIPAA/ISO27001/PCI DSS compliance.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- MOBILE -->
+  <section class="section" data-cat="mobile">
+    <div class="section-header">
+      <div class="section-line" style="background: var(--cat-mobile)"></div>
+      <span class="section-icon">📱</span>
+      <h2 class="section-title">Android / Mobile</h2>
+      <span class="section-count" id="count-mobile"></span>
+    </div>
+    <div class="tools-grid" id="grid-mobile">
+      <div class="tool-card" style="--cat-color: var(--cat-mobile)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/AndroBugs/AndroBugs_Framework" target="_blank">AndroBugs</a><a class="tool-github" href="https://github.com/AndroBugs/AndroBugs_Framework" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Efficient Android vulnerability scanner for developers and security researchers.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-mobile)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/iBotPeaches/Apktool" target="_blank">apktool</a><a class="tool-github" href="https://github.com/iBotPeaches/Apktool" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Reverse engineering tool for Android APK files.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-mobile)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/frida/frida" target="_blank">frida</a><a class="tool-github" href="https://github.com/frida/frida" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Dynamic instrumentation toolkit — works on Android, iOS, macOS, Windows, Linux.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-mobile)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/MobSF/Mobile-Security-Framework-MobSF" target="_blank">MobSF</a><a class="tool-github" href="https://github.com/MobSF/Mobile-Security-Framework-MobSF" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Automated all-in-one mobile app (Android/iOS) pen-testing, malware analysis, and security assessment.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-mobile)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/linkedin/qark" target="_blank">qark</a><a class="tool-github" href="https://github.com/linkedin/qark" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Tool to look for security-related Android application vulnerabilities.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-mobile)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/1N3/ReverseAPK" target="_blank">ReverseAPK</a><a class="tool-github" href="https://github.com/1N3/ReverseAPK" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Quickly analyze and reverse engineer Android packages.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- EVASION -->
+  <section class="section" data-cat="evasion">
+    <div class="section-header">
+      <div class="section-line" style="background: var(--cat-evasion)"></div>
+      <span class="section-icon">🛡️</span>
+      <h2 class="section-title">Evasion & AV Bypass</h2>
+      <span class="section-count" id="count-evasion"></span>
+    </div>
+    <div class="tools-grid" id="grid-evasion">
+      <div class="tool-card" style="--cat-color: var(--cat-evasion)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/govolution/avet" target="_blank">avet</a><a class="tool-github" href="https://github.com/govolution/avet" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">AntiVirus evasion tool for generating undetected payloads.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-evasion)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/Screetsec/Brutal" target="_blank">Brutal</a><a class="tool-github" href="https://github.com/Screetsec/Brutal" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Toolkit to quickly create payloads, PowerShell attacks, and virus attacks for HID devices.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-evasion)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/nccgroup/demiguise" target="_blank">demiguise</a><a class="tool-github" href="https://github.com/nccgroup/demiguise" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">HTA encryption tool for red teams to bypass detection.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-evasion)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/Mr-Un1k0d3r/DKMC" target="_blank">DKMC</a><a class="tool-github" href="https://github.com/Mr-Un1k0d3r/DKMC" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Malicious payload evasion tool using image steganography techniques.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-evasion)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/secretsquirrel/the-backdoor-factory" target="_blank">backdoor-factory</a><a class="tool-github" href="https://github.com/secretsquirrel/the-backdoor-factory" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Patch PE, ELF, Mach-O binaries with shellcode.</p>
+        <span class="tool-badge badge-archived">⚠ Archived</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-evasion)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/nccgroup/Winpayloads" target="_blank">Winpayloads</a><a class="tool-github" href="https://github.com/nccgroup/Winpayloads" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Undetectable Windows payload generation for red team engagements.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- MISC -->
+  <section class="section" data-cat="misc">
+    <div class="section-header">
+      <div class="section-line" style="background: var(--cat-misc)"></div>
+      <span class="section-icon">🔧</span>
+      <h2 class="section-title">Miscellaneous & Frameworks</h2>
+      <span class="section-count" id="count-misc"></span>
+    </div>
+    <div class="tools-grid" id="grid-misc">
+      <div class="tool-card" style="--cat-color: var(--cat-misc)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/Hackplayers/4nonimizer" target="_blank">4nonimizer</a><a class="tool-github" href="https://github.com/Hackplayers/4nonimizer" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Bash script for anonymizing public IP via TOR and various VPN providers.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-misc)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/offensive-security/exploitdb" target="_blank">exploitdb</a><a class="tool-github" href="https://github.com/offensive-security/exploitdb" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">The official Exploit Database repository — searchable archive of public exploits.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-misc)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/thehackingsage/hacktronian" target="_blank">hacktronian</a><a class="tool-github" href="https://github.com/thehackingsage/hacktronian" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">All in one hacking tool for Linux & Android combining multiple tools.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-misc)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/CISOfy/lynis" target="_blank">lynis</a><a class="tool-github" href="https://github.com/CISOfy/lynis" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Security auditing and hardening tool for Unix-based systems.</p>
+        <span class="tool-badge badge-active">✓ Actively maintained</span>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-misc)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/k4m4/onioff" target="_blank">onioff</a><a class="tool-github" href="https://github.com/k4m4/onioff" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Onion URL inspector for inspecting and verifying deep web links.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-misc)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/SusmithKrishnan/torghost" target="_blank">torghost</a><a class="tool-github" href="https://github.com/SusmithKrishnan/torghost" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Tor anonymizer — route all traffic through the Tor network.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-misc)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/Rajkumrdusad/Tool-X" target="_blank">Tool-X</a><a class="tool-github" href="https://github.com/Rajkumrdusad/Tool-X" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Kali Linux hacking tool installer for Termux — install 370+ hacking tools on Android.</p>
+      </div>
+      <div class="tool-card" style="--cat-color: var(--cat-misc)">
+        <div class="tool-top"><a class="tool-name" href="https://github.com/securestate/termineter" target="_blank">termineter</a><a class="tool-github" href="https://github.com/securestate/termineter" target="_blank">↗ GitHub</a></div>
+        <p class="tool-desc">Smart meter security testing framework for industrial control systems.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div>PentestDB · Updated February 2026 · 400+ open-source tools</div>
+  <span>⚠ Educational & authorized research purposes only</span>
+</footer>
+
+<script>
+  // Apply left border color from CSS var on hover
+  document.querySelectorAll('.tool-card').forEach(card => {
+    const color = getComputedStyle(card).getPropertyValue('--cat-color').trim();
+    card.style.setProperty('--active-border', color);
+  });
+
+  // Add dynamic ::before color via style injection approach
+  const styleEl = document.createElement('style');
+  styleEl.textContent = `.tool-card:hover::before { background: var(--active-border, var(--accent)); }`;
+  document.head.appendChild(styleEl);
+
+  // Count tools per section
+  function updateCounts() {
+    const sections = document.querySelectorAll('.section');
+    let totalVisible = 0;
+    sections.forEach(section => {
+      const cat = section.dataset.cat;
+      const cards = section.querySelectorAll('.tool-card:not(.hidden)');
+      totalVisible += cards.length;
+      const countEl = document.getElementById('count-' + cat);
+      if (countEl) countEl.textContent = cards.length + ' tools';
+      // Hide section if no tools visible
+      if (cards.length === 0) section.classList.add('hidden');
+      else section.classList.remove('hidden');
+    });
+    document.getElementById('showing-count').textContent = totalVisible + ' tools';
+  }
+
+  updateCounts();
+
+  // Filter by category
+  let activeCategory = 'all';
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeCategory = btn.dataset.cat;
+      applyFilters();
+    });
+  });
+
+  // Search
+  const searchInput = document.getElementById('search');
+  searchInput.addEventListener('input', applyFilters);
+
+  function applyFilters() {
+    const query = searchInput.value.toLowerCase().trim();
+    const sections = document.querySelectorAll('.section');
+
+    sections.forEach(section => {
+      const sectionCat = section.dataset.cat;
+      const catMatch = activeCategory === 'all' || sectionCat === activeCategory;
+
+      if (!catMatch) {
+        section.classList.add('hidden');
+        return;
+      }
+
+      const cards = section.querySelectorAll('.tool-card');
+      cards.forEach(card => {
+        if (!query) {
+          card.classList.remove('hidden');
+          // Remove highlights
+          card.querySelectorAll('mark').forEach(m => {
+            m.outerHTML = m.innerHTML;
+          });
+          return;
+        }
+
+        const name = card.querySelector('.tool-name')?.textContent.toLowerCase() || '';
+        const desc = card.querySelector('.tool-desc')?.textContent.toLowerCase() || '';
+        const searchData = (card.dataset.search || '').toLowerCase();
+
+        const matches = name.includes(query) || desc.includes(query) || searchData.includes(query);
+        card.classList.toggle('hidden', !matches);
+      });
+    });
+
+    updateCounts();
+  }
+</script>
+</body>
+</html>
