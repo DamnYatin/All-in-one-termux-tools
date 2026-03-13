@@ -4,7 +4,7 @@
 >
 > ⚠️ **For educational and authorized security research purposes only.** Always obtain explicit written permission before testing any system you do not own.
 
-**Last Updated:** February 2026 | **Tools Listed:** 400+ | [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/sindresorhus/awesome)
+**Last Updated:** March 2026 | **Tools Listed:** 400+ | [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/sindresorhus/awesome)
 
 ---
 
